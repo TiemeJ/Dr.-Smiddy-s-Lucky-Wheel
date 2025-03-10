@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Smiddy's Lucky Wheel</title>
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInDown 1s;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s;
+        }
+
+        .btn {
+            background-color: #FFD700;
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateY(0);
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+        }
+
+        /* Page specific styles */
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 100%;
+            animation: fadeIn 0.5s;
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Welcome Page */
+        #welcome {
+            text-align: center;
+        }
+
+        #welcome h1 {
+            animation: bounceIn 1s;
+        }
+
+        /* Wheel Page */
+        #wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 30px;
+        }
+
+        #wheel {
+            width: 100%;
+            height: 100%;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            transform: rotate(202.5deg); /* Initial position - point to middle of purple area */
+        }
+
+        #ticker {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: #ffcc00;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        /* Prize Page */
+        #golden-ticket {
+            background: linear-gradient(135deg, #ffd700, #ffcc00);
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: perspective(1000px) rotateX(10deg);
+            margin: 30px auto;
+            position: relative;
+            max-width: 300px;
+            border: 5px dashed #fff;
+            animation: shine 2s infinite alternate;
+        }
+
+        #golden-ticket::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            z-index: -1;
+            background: linear-gradient(135deg, #ffd700, #ffcc00);
+            border-radius: 20px;
+            filter: blur(15px);
+        }
+
+        #golden-ticket h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.5);
+        }
+
+        #golden-ticket p {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.5);
+        }
+
+        /* Confetti Animation */
+        .confetti-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffd700;
+            opacity: 0.7;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes bounceIn {
+            0% { 
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shine {
+            from { box-shadow: 0 0 20px #ffd700; }
+            to { box-shadow: 0 0 30px #ffd700, 0 0 60px #ffd700; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Page -->
+    <div id="welcome" class="page active">
+        <div class="container">
+            <h1>Welcome Dr. Smiddy, PhD!</h1>
+            <p>Today might be your lucky day!</p>
+            <button id="try-luck-btn" class="btn">Try your Luck!</button>
+        </div>
+    </div>
+
+    <!-- Wheel Page -->
+    <div id="wheel-page" class="page">
+        <div class="container">
+            <h2>Wheel of Fortune</h2>
+            <div id="wheel-container">
+                <div id="ticker"></div>
+                <svg id="wheel" viewBox="0 0 500 500">
+                    <defs>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="0" stdDeviation="15" flood-color="#000" flood-opacity="0.3"/>
+                        </filter>
+                    </defs>
+                    <!-- Wheel Background -->
+                    <circle cx="250" cy="250" r="245" fill="#333" filter="url(#shadow)"/>
+                    
+                    <!-- Wheel Sections -->
+                    <path d="M250,250 L250,5 A245,245 0 0,1 429.5,70.5 Z" fill="#FF6B6B"/>
+                    <path d="M250,250 L429.5,70.5 A245,245 0 0,1 495,250 Z" fill="#4ECDC4"/>
+                    <path d="M250,250 L495,250 A245,245 0 0,1 429.5,429.5 Z" fill="#FFD166"/>
+                    <path d="M250,250 L429.5,429.5 A245,245 0 0,1 250,495 Z" fill="#F86624"/>
+                    <path d="M250,250 L250,495 A245,245 0 0,1 70.5,429.5 Z" fill="#662E9B"/>
+                    <path d="M250,250 L70.5,429.5 A245,245 0 0,1 5,250 Z" fill="#43BCCD"/>
+                    <path d="M250,250 L5,250 A245,245 0 0,1 70.5,70.5 Z" fill="#FC9E4F"/>
+                    <path d="M250,250 L70.5,70.5 A245,245 0 0,1 250,5 Z" fill="#8CBA80"/>
+                    
+                    <!-- Center Circle -->
+                    <circle cx="250" cy="250" r="50" fill="#FFFFFF" stroke="#333" stroke-width="2"/>
+                    
+                    <!-- Define paths with 75, 120, 165, 210, 255, 300, 345, 30 degrees rotation -->
+                    <defs>
+                        <!-- Paths from version 20 -->
+                        <path id="path1" d="M 250 250 L 294 86" /> <!-- Lego (75 degrees) -->
+                        <path id="path2" d="M 250 250 L 165 103" /> <!-- Growth Mindset (120 degrees) -->
+                        <path id="path3" d="M 250 250 L 86 206" /> <!-- Space Walk (165 degrees) -->
+                        <path id="path4" d="M 250 250 L 103 335" /> <!-- 3D Smiddy (210 degrees) -->
+                        <path id="path5" d="M 250 250 L 206 414" /> <!-- Pikachu Card (255 degrees) -->
+                        <path id="path6" d="M 250 250 L 335 397" /> <!-- AGI (300 degrees) -->
+                        <path id="path7" d="M 250 250 L 414 294" /> <!-- X-ray Glasses (345 degrees) -->
+                        <path id="path8" d="M 250 250 L 397 165" /> <!-- Gigolo (30 degrees) -->
+                    </defs>
+                    
+                    <!-- Text elements -->
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path1" startOffset="60%" text-anchor="middle" fill="black" font-size="16">
+                            Lego
+                        </textPath>
+                    </text>
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path2" startOffset="60%" text-anchor="middle" fill="black" font-size="14">
+                            Growth Mindset
+                        </textPath>
+                    </text>
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path3" startOffset="60%" text-anchor="middle" fill="black" font-size="16">
+                            Space Walk
+                        </textPath>
+                    </text>
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path4" startOffset="60%" text-anchor="middle" fill="black" font-size="16">
+                            3D Smiddy
+                        </textPath>
+                    </text>
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path5" startOffset="60%" text-anchor="middle" fill="black" font-size="16">
+                            Pikachu Card
+                        </textPath>
+                    </text>
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path6" startOffset="60%" text-anchor="middle" fill="black" font-size="16">
+                            AGI
+                        </textPath>
+                    </text>
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path7" startOffset="60%" text-anchor="middle" fill="black" font-size="14">
+                            X-ray Glasses
+                        </textPath>
+                    </text>
+                    <text class="wheel-text" style="font-family: 'Comic Sans MS', 'Marker Felt', fantasy; font-weight: bold;">
+                        <textPath href="#path8" startOffset="60%" text-anchor="middle" fill="black" font-size="16">
+                            Gigolo
+                        </textPath>
+                    </text>
+                </svg>
+            </div>
+            <button id="spin-btn" class="btn">Spin the Wheel!</button>
+            <button id="collect-btn" class="btn" style="display: none;">Collect your Prize!</button>
+        </div>
+    </div>
+
+    <!-- Prize Page -->
+    <div id="prize-page" class="page">
+        <div class="container">
+            <h2>Lego Prize</h2>
+            <div id="golden-ticket">
+                <h3>Congratulations!</h3>
+                <p>150 euro Lego credits!</p>
+            </div>
+            <p>Lucky you, Dr. Smiddy! Enjoy building something amazing.</p>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <script>
+        // Page Navigation
+        document.getElementById('try-luck-btn').addEventListener('click', function() {
+            document.getElementById('welcome').classList.remove('active');
+            document.getElementById('wheel-page').classList.add('active');
+        });
+
+        document.getElementById('collect-btn').addEventListener('click', function() {
+            document.getElementById('wheel-page').classList.remove('active');
+            document.getElementById('prize-page').classList.add('active');
+        });
+
+        // Wheel Spin Functionality
+        const wheel = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spin-btn');
+        const collectBtn = document.getElementById('collect-btn');
+        
+        function spinWheel() {
+            // Disable spin button
+            spinBtn.disabled = true;
+            
+            // Based on the latest screenshot:
+            // The yellow triangle is pointing at "Growth Mi"
+            // The Lego segment (red) is 1 segment CLOCKWISE from current position
+            // Need to ADD 45 degrees to our current angle
+            
+            // Previous rotation was 292.5 degrees, so:
+            const degreesToLego = 292.5 + 45; // 337.5 degrees to land on Lego
+            
+            // Calculate total rotation: 5 full spins + precise angle to Lego
+            const rotationAngle = (5 * 360) + degreesToLego;
+            
+            // Apply the rotation
+            wheel.style.transform = `rotate(${rotationAngle}deg)`;
+            
+            // After the spin animation finishes
+            setTimeout(() => {
+                // Create confetti
+                createConfetti();
+                
+                // Show collect button
+                setTimeout(() => {
+                    collectBtn.style.display = 'inline-block';
+                    spinBtn.style.display = 'none';
+                }, 1000);
+            }, 4000); // Match this with the CSS transition duration
+        }
+
+        spinBtn.addEventListener('click', spinWheel);
+
+        // Confetti Animation
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti-container');
+            confettiContainer.style.display = 'block';
+            
+            const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#662e9b', '#fc9e4f', '#8cba80'];
+            
+            // Create 100 confetti pieces
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Random properties
+                const size = Math.floor(Math.random() * 10) + 5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const left = Math.random() * 100;
+                const rotationDeg = Math.random() * 360;
+                
+                // Set styles
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.left = `${left}%`;
+                confetti.style.top = '-20px';
+                confetti.style.transform = `rotate(${rotationDeg}deg)`;
+                
+                // Add to container
+                confettiContainer.appendChild(confetti);
+                
+                // Animate falling
+                const fallDuration = Math.random() * 3 + 2;
+                const fallDistance = Math.random() * 100 + 100;
+                
+                confetti.animate([
+                    { transform: `translate(0, 0) rotate(${rotationDeg}deg)` },
+                    { transform: `translate(${Math.random() * 100 - 50}px, ${window.innerHeight + 20}px) rotate(${rotationDeg + 360}deg)` }
+                ], {
+                    duration: fallDuration * 1000,
+                    easing: 'cubic-bezier(0.37, 0, 0.63, 1)'
+                });
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, fallDuration * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
