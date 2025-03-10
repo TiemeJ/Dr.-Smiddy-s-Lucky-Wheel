@@ -50,6 +50,16 @@
             animation: fadeInUp 1s;
         }
 
+        /* Added CSS for Lucky Image */
+        #lucky-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 1.5s;
+        }
+
         .btn {
             background-color: #FFD700;
             color: #333;
@@ -244,6 +254,8 @@
         <div class="container">
             <h1>Welcome Dr. Smiddy, PhD!</h1>
             <p>Today might be your lucky day!</p>
+            <!-- Added image element -->
+            <img id="lucky-image" src="Smiddy-Nieuwenhuis.png" alt="Lucky image">
             <button id="try-luck-btn" class="btn">Try your Luck!</button>
         </div>
     </div>
