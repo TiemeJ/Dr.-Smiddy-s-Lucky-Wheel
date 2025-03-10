@@ -358,6 +358,8 @@
                 <p>150 euro Lego credits!</p>
             </div>
             <p>Lucky you, Dr. Smiddy! Enjoy building something amazing.</p>
+            <!-- Added Try Again button -->
+            <button id="try-again-btn" class="btn">Try Again!</button>
         </div>
     </div>
 
@@ -374,6 +376,33 @@
         document.getElementById('collect-btn').addEventListener('click', function() {
             document.getElementById('wheel-page').classList.remove('active');
             document.getElementById('prize-page').classList.add('active');
+        });
+
+        // Added event listener for Try Again button
+        document.getElementById('try-again-btn').addEventListener('click', function() {
+            // Hide prize page
+            document.getElementById('prize-page').classList.remove('active');
+            // Show welcome page
+            document.getElementById('welcome').classList.add('active');
+            
+            // Reset wheel position
+            const wheel = document.getElementById('wheel');
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(202.5deg)';
+            
+            // Reset spin button and collect button
+            document.getElementById('spin-btn').disabled = false;
+            document.getElementById('spin-btn').style.display = 'inline-block';
+            document.getElementById('collect-btn').style.display = 'none';
+            
+            // Clear any remaining confetti
+            document.getElementById('confetti-container').innerHTML = '';
+            document.getElementById('confetti-container').style.display = 'none';
+            
+            // Force reflow to make sure transition is reset
+            setTimeout(function() {
+                wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67)';
+            }, 50);
         });
 
         // Wheel Spin Functionality
