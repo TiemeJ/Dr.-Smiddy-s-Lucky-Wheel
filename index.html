@@ -204,6 +204,33 @@
             opacity: 0.7;
         }
 
+        /* Sound Control */
+        .sound-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .sound-btn {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .sound-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -258,6 +285,25 @@
     </style>
 </head>
 <body>
+    <!-- Audio Elements -->
+    <audio id="button-click" preload="auto">
+        <source src="button-click.wav" type="audio/wav">
+    </audio>
+    <audio id="wheel-spin" preload="auto">
+        <source src="wheel-spin.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="winner" preload="auto">
+        <source src="winner.wav" type="audio/wav">
+    </audio>
+    <audio id="background-music" loop preload="auto">
+        <source src="background-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sound Control Button -->
+    <div class="sound-control">
+        <button id="sound-toggle" class="sound-btn">🔊</button>
+    </div>
+
     <!-- Welcome Page -->
     <div id="welcome" class="page active">
         <div class="container">
@@ -378,19 +424,71 @@
     <div class="confetti-container" id="confetti-container"></div>
 
     <script>
-        // Page Navigation
+        // Sound Controls
+        let soundEnabled = true;
+        const buttonClick = document.getElementById('button-click');
+        const wheelSpin = document.getElementById('wheel-spin');
+        const winnerSound = document.getElementById('winner');
+        const backgroundMusic = document.getElementById('background-music');
+        const soundToggle = document.getElementById('sound-toggle');
+
+        // Function to play sounds
+        function playSound(sound) {
+            if (soundEnabled) {
+                sound.currentTime = 0;
+                sound.play();
+            }
+        }
+
+        // Toggle sound on/off
+        soundToggle.addEventListener('click', function() {
+            soundEnabled = !soundEnabled;
+            if (soundEnabled) {
+                soundToggle.textContent = '🔊';
+                backgroundMusic.play();
+            } else {
+                soundToggle.textContent = '🔇';
+                backgroundMusic.pause();
+                wheelSpin.pause();
+                winnerSound.pause();
+                buttonClick.pause();
+            }
+        });
+
+        // Start background music when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            // Start with a slight delay to ensure everything is loaded
+            setTimeout(() => {
+                if (soundEnabled) {
+                    backgroundMusic.volume = 0.4; // Set volume to 40%
+                    backgroundMusic.play();
+                }
+            }, 1000);
+        });
+
+        // Handle click on mobile
+        document.addEventListener('click', function() {
+            if (soundEnabled && backgroundMusic.paused) {
+                backgroundMusic.play();
+            }
+        }, { once: true });
+
+        // Page Navigation with sound effects
         document.getElementById('try-luck-btn').addEventListener('click', function() {
+            playSound(buttonClick);
             document.getElementById('welcome').classList.remove('active');
             document.getElementById('wheel-page').classList.add('active');
         });
 
         document.getElementById('collect-btn').addEventListener('click', function() {
+            playSound(buttonClick);
             document.getElementById('wheel-page').classList.remove('active');
             document.getElementById('prize-page').classList.add('active');
         });
 
         // Added event listener for Try Again button
         document.getElementById('try-again-btn').addEventListener('click', function() {
+            playSound(buttonClick);
             // Hide prize page
             document.getElementById('prize-page').classList.remove('active');
             // Show welcome page
@@ -416,12 +514,15 @@
             }, 50);
         });
 
-        // Wheel Spin Functionality
+        // Wheel Spin Functionality with sound
         const wheel = document.getElementById('wheel');
         const spinBtn = document.getElementById('spin-btn');
         const collectBtn = document.getElementById('collect-btn');
         
         function spinWheel() {
+            // Play wheel spin sound
+            playSound(wheelSpin);
+            
             // Disable spin button
             spinBtn.disabled = true;
             
@@ -441,6 +542,9 @@
             
             // After the spin animation finishes
             setTimeout(() => {
+                // Play winner sound
+                playSound(winnerSound);
+                
                 // Create confetti
                 createConfetti();
                 
@@ -501,6 +605,37 @@
                 }, fallDuration * 1000);
             }
         }
+
+        // Add tick sound effect while wheel is spinning
+        let tickInterval;
+        
+        function startTickSound() {
+            if (soundEnabled) {
+                const tickSound = new Audio('tick.wav');
+                tickSound.volume = 0.3;
+                tickSound.play();
+            }
+        }
+        
+        function startTickSoundLoop() {
+            // Clear any existing interval
+            clearInterval(tickInterval);
+            
+            // Start the tick sound loop
+            tickInterval = setInterval(() => {
+                startTickSound();
+            }, 100); // Adjust timing as needed
+            
+            // Stop after spin animation completes
+            setTimeout(() => {
+                clearInterval(tickInterval);
+            }, 4000);
+        }
+        
+        // Add tick sounds to spin event
+        spinBtn.addEventListener('click', function() {
+            startTickSoundLoop();
+        });
     </script>
 </body>
 </html>
