@@ -295,6 +295,9 @@
     <audio id="winner" preload="auto">
         <source src="winner.mp3" type="audio/mpeg">
     </audio>
+    <audio id="reveal" preload="auto">
+        <source src="reveal.mp3" type="audio/mpeg">
+    </audio>
     <audio id="background-music" loop preload="auto">
         <source src="background-music.mp3" type="audio/mpeg">
     </audio>
@@ -429,6 +432,7 @@
         const buttonClick = document.getElementById('button-click');
         const wheelSpin = document.getElementById('wheel-spin');
         const winnerSound = document.getElementById('winner');
+        const revealSound = document.getElementById('reveal');
         const backgroundMusic = document.getElementById('background-music');
         const soundToggle = document.getElementById('sound-toggle');
 
@@ -451,6 +455,7 @@
                 backgroundMusic.pause();
                 wheelSpin.pause();
                 winnerSound.pause();
+                revealSound.pause();
                 buttonClick.pause();
             }
         });
@@ -484,6 +489,11 @@
             playSound(buttonClick);
             document.getElementById('wheel-page').classList.remove('active');
             document.getElementById('prize-page').classList.add('active');
+            
+            // Play reveal sound when the prize page is shown
+            setTimeout(() => {
+                playSound(revealSound);
+            }, 500);
         });
 
         // Added event listener for Try Again button
